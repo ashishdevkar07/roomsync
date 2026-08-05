@@ -1,0 +1,41 @@
+/* Step 1 — Reset all default browser styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Step 2 — Base body styles */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #FFFFFF;
+    color: #111827;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Step 3 — Headings use Poppins */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Step 4 — Root takes full height */
+html, body, #root {
+    height: 100%;
+}
+
+/* Step 5 — Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Step 6 — Remove default button styles */
+button {
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Step 7 — Remove default link styles */
+a {
+    text-decoration: none;
+    color: inherit;
+}
