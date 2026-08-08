@@ -57,9 +57,7 @@ function Login() {
 
             // Step 12 — Redirect based on profile completion
             if(userData.profileComplete) {
-                navigate("/browse")
-            } else {
-                navigate("/complete-profile")
+                navigate("/dashboard")
             }
 
         } catch(err) {

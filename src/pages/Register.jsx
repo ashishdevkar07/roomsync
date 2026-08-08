@@ -46,7 +46,7 @@ function Register() {
             localStorage.setItem("userEmail", email)
 
             // Step 9 — Redirect to complete profile page
-            navigate("/complete-profile")
+            navigate("/dashboard")
 
         } catch (err) {
             setError("Something went wrong. Please try again.")
