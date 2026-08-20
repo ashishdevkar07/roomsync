@@ -216,9 +216,11 @@ function CompleteProfile() {
                             <select
                                 value={gender}
                                 onChange={(e) => setGender(e.target.value)}
-                                style={selectStyle}
+                                style={{
+                                    ...selectStyle,
+                                    color: "black"
+                                }}
                             >
-                                <option value="">Select</option>
                                 <option value="Male">Male</option>
                                 <option value="Female">Female</option>
                                 <option value="Other">Other</option>
@@ -230,9 +232,11 @@ function CompleteProfile() {
                             <select
                                 value={lookingFor}
                                 onChange={(e) => setLookingFor(e.target.value)}
-                                style={selectStyle}
+                                style={{
+                                    ...selectStyle,
+                                    color: "black"
+                                }}
                             >
-                                <option value="">Select</option>
                                 <option value="Male">Male</option>
                                 <option value="Female">Female</option>
                                 <option value="Any">Any</option>

@@ -219,9 +219,11 @@ function Browse() {
                             <select
                                 value={genderFilter}
                                 onChange={(e) => setGenderFilter(e.target.value)}
-                                style={inputStyle}
+                                style={{
+                                    ...inputStyle,
+                                    color: "black"
+                                }}
                             >
-                                <option value="">Any</option>
                                 <option value="Male">Male</option>
                                 <option value="Female">Female</option>
                                 <option value="Other">Other</option>
@@ -234,7 +236,10 @@ function Browse() {
                             <select
                                 value={lookingForFilter}
                                 onChange={(e) => setLookingForFilter(e.target.value)}
-                                style={inputStyle}
+                                style={{
+                                    ...inputStyle,
+                                    color : "black"
+                                }}
                             >
                                 <option value="">Any</option>
                                 <option value="Male">Male</option>
@@ -477,7 +482,9 @@ function Browse() {
                                     )}
 
                                     {/* Connect button */}
-                                    <button style={{
+                                    <button 
+                                    onClick={() => navigate(`/profile/${profile.id}`)}
+                                    style={{
                                         width: "100%",
                                         padding: "10px",
                                         background: "linear-gradient(135deg, #7C3AED, #4F46E5)",

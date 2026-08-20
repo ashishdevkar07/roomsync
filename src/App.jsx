@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import CompleteProfile from "./pages/CompleteProfile";
 import Dashboard from "./pages/Dashboard";
 import Browse from "./pages/Browse";
+import ProfileDetail from "./pages/ProfileDetail";
 
 function App() {
     return (
@@ -16,6 +17,7 @@ function App() {
                 <Route path="/complete-profile" element={<CompleteProfile />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/browse" element={<Browse />} />
+                <Route path="/profile/:id" element={<ProfileDetail />} />
             </Routes>
         </BrowserRouter>
     )
