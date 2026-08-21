@@ -206,7 +206,7 @@ function Landing() {
 
                     {/* Secondary button */}
                     <button
-                        onClick={() => navigate("/browse")}
+                        onClick={() => navigate("/register")}
                         style={{
                             padding: "16px 40px",
                             background: "transparent",

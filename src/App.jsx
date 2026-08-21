@@ -6,6 +6,7 @@ import CompleteProfile from "./pages/CompleteProfile";
 import Dashboard from "./pages/Dashboard";
 import Browse from "./pages/Browse";
 import ProfileDetail from "./pages/ProfileDetail";
+import ProtectedRoute from "./components/ProtectedRoutes";
 
 function App() {
     return (
@@ -14,10 +15,22 @@ function App() {
                 <Route path="/" element={<Landing />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/login" element={<Login />} />
-                <Route path="/complete-profile" element={<CompleteProfile />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/browse" element={<Browse />} />
-                <Route path="/profile/:id" element={<ProfileDetail />} />
+
+                <Route path="/dashboard" element={
+                    <ProtectedRoute> <Dashboard /></ProtectedRoute>
+                } />
+
+                <Route path="/complete-profile" element={
+                    <ProtectedRoute> <CompleteProfile /></ProtectedRoute>
+                } />
+
+                <Route path="/browse" element={
+                    <ProtectedRoute> <Browse /></ProtectedRoute>
+                } />
+
+                <Route path="/profile/:id" element={
+                    <ProtectedRoute> <ProfileDetail /></ProtectedRoute>
+                } />
             </Routes>
         </BrowserRouter>
     )

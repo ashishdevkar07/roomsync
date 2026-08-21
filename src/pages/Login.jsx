@@ -18,7 +18,7 @@ function Login() {
     // Step 5 — Handle login
     async function handleLogin() {
         // Step 6 — Validation
-        if(!email || !password) {
+        if (!email || !password) {
             setError("Please fill all fields")
             return
         }
@@ -33,7 +33,7 @@ function Login() {
             const snapshot = await getDocs(q)
 
             // Step 8 — Check if user exists
-            if(snapshot.empty) {
+            if (snapshot.empty) {
                 setError("No account found with this email")
                 setLoading(false)
                 return
@@ -44,7 +44,7 @@ function Login() {
             const userData = userDoc.data()
 
             // Step 10 — Check password
-            if(userData.password !== password) {
+            if (userData.password !== password) {
                 setError("Incorrect password")
                 setLoading(false)
                 return
@@ -56,11 +56,10 @@ function Login() {
             localStorage.setItem("userId", userDoc.id)
 
             // Step 12 — Redirect based on profile completion
-            if(userData.profileComplete) {
                 navigate("/dashboard")
-            }
 
-        } catch(err) {
+
+        } catch (err) {
             setError("Something went wrong. Please try again.")
             console.log("Login error:", err)
         } finally {
