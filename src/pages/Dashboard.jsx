@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { db } from "../firebase"
-import { doc, getDoc, collection, getDocs } from "firebase/firestore"
+import { doc, getDoc, collection, getDocs, query, where } from "firebase/firestore"
 
 function Dashboard() {
     const userName = localStorage.getItem("userName")
@@ -12,15 +12,16 @@ function Dashboard() {
     const [loading, setLoading] = useState(true)
     const [totalListings, setTotalListings] = useState(0)
     const [searchQuery, setSearchQuery] = useState("")
+    const [interests, setInterests] = useState([])
 
     useEffect(() => {
         async function fetchData() {
-            if(!userId) { navigate("/login"); return }
+            if (!userId) { navigate("/login"); return }
             try {
                 // Step 1 — Get user profile status
                 const userRef = doc(db, "users", userId)
                 const userSnap = await getDoc(userRef)
-                if(userSnap.exists()) {
+                if (userSnap.exists()) {
                     setProfileComplete(userSnap.data().profileComplete || false)
                 }
 
@@ -28,11 +29,22 @@ function Dashboard() {
                 const usersSnap = await getDocs(collection(db, "users"))
                 setTotalListings(usersSnap.size)
 
-            } catch(err) {
+            } catch (err) {
                 console.log("Error:", err)
             } finally {
                 setLoading(false)
             }
+
+            const interestQuery = query(
+                collection(db, "interests"),
+                where("toId", "==", userId)
+            )
+            const interestSnap = await getDocs(interestQuery)
+            const interestData = interestSnap.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }))
+            setInterests(interestData)
         }
         fetchData()
     }, [])
@@ -75,7 +87,7 @@ function Dashboard() {
         }
     ]
 
-    if(loading) return (
+    if (loading) return (
         <div style={{
             minHeight: "100vh",
             background: "#0F0A1E",
@@ -299,6 +311,109 @@ function Dashboard() {
                         </div>
                     ))}
                 </div>
+
+                {/* ── NOTIFICATIONS ── */}
+                {interests.length > 0 && (
+                    <div style={{
+                        background: "#13102B",
+                        border: "1px solid rgba(124,58,237,0.3)",
+                        borderRadius: "20px",
+                        padding: "24px",
+                        marginBottom: "32px"
+                    }}>
+                        <h3 style={{
+                            color: "#F9FAFB",
+                            fontSize: "16px",
+                            fontWeight: "600",
+                            fontFamily: "Poppins, sans-serif",
+                            marginBottom: "16px",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "10px"
+                        }}>
+                            💜 Interests Received
+                            <span style={{
+                                background: "linear-gradient(135deg, #7C3AED, #4F46E5)",
+                                color: "white",
+                                fontSize: "12px",
+                                fontWeight: "700",
+                                padding: "2px 10px",
+                                borderRadius: "20px"
+                            }}>{interests.length}</span>
+                        </h3>
+
+                        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                            {interests.map((interest) => (
+                                <div key={interest.id} style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                    padding: "14px 18px",
+                                    background: "rgba(124,58,237,0.08)",
+                                    border: "1px solid rgba(124,58,237,0.15)",
+                                    borderRadius: "14px"
+                                }}>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                                        {/* Avatar */}
+                                        <div style={{
+                                            width: "42px",
+                                            height: "42px",
+                                            borderRadius: "50%",
+                                            background: "linear-gradient(135deg, #7C3AED, #4F46E5)",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            fontSize: "18px",
+                                            fontWeight: "700",
+                                            color: "white",
+                                            fontFamily: "Poppins, sans-serif",
+                                            flexShrink: 0
+                                        }}>
+                                            {interest.fromName?.charAt(0).toUpperCase()}
+                                        </div>
+                                        <div>
+                                            <p style={{
+                                                color: "#F9FAFB",
+                                                fontSize: "14px",
+                                                fontWeight: "600",
+                                                fontFamily: "Poppins, sans-serif",
+                                                marginBottom: "2px"
+                                            }}>
+                                                {interest.fromName}
+                                            </p>
+                                            <p style={{
+                                                color: "rgba(249,250,251,0.4)",
+                                                fontSize: "12px",
+                                                fontFamily: "Inter, sans-serif"
+                                            }}>
+                                                Sent you an interest request • {new Date(interest.createdAt).toLocaleDateString()}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* View Profile button */}
+                                    <button
+                                        onClick={() => navigate(`/profile/${interest.fromId}`)}
+                                        style={{
+                                            padding: "8px 18px",
+                                            background: "linear-gradient(135deg, #7C3AED, #4F46E5)",
+                                            color: "white",
+                                            border: "none",
+                                            borderRadius: "20px",
+                                            fontSize: "13px",
+                                            fontWeight: "600",
+                                            cursor: "pointer",
+                                            fontFamily: "Poppins, sans-serif",
+                                            whiteSpace: "nowrap"
+                                        }}
+                                    >
+                                        View Profile
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 {/* ── MAIN CONTENT GRID ── */}
                 <div style={{
