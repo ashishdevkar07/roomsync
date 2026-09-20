@@ -7,6 +7,7 @@ import Dashboard from "./pages/Dashboard";
 import Browse from "./pages/Browse";
 import ProfileDetail from "./pages/ProfileDetail";
 import ProtectedRoute from "./components/ProtectedRoutes";
+import MyProfile from "./pages/MyProfile";
 
 function App() {
     return (
@@ -30,6 +31,10 @@ function App() {
 
                 <Route path="/profile/:id" element={
                     <ProtectedRoute> <ProfileDetail /></ProtectedRoute>
+                } />
+
+                <Route path="/my-profile" element={
+                    <ProtectedRoute><MyProfile /></ProtectedRoute>
                 } />
             </Routes>
         </BrowserRouter>

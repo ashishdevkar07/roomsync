@@ -1,6 +1,7 @@
 // Step 1 — Import dependencies
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useNavigate } from "react-router-dom"
+import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api"
 
 // Step 2 — Import Firebase
 import { db } from "../firebase"
@@ -24,11 +25,71 @@ function CompleteProfile() {
     const [bio, setBio] = useState("")
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState("")
+    const [location, setLocation] = useState(null) // stores { lat, lng }
+    const [mapCenter, setMapCenter] = useState({ lat: 18.5204, lng: 73.8567 })
+    const cityInputRef = useRef(null)
+    const collegeInputRef = useRef(null)
+
+    // When user clicks on map — save that location
+    function handleMapClick(event) {
+        const lat = event.latLng.lat()
+        const lng = event.latLng.lng()
+        setLocation({ lat, lng })
+        setMapCenter({ lat, lng })
+    }
+
+    useEffect(() => {
+        if (!cityInputRef.current) return
+
+        const autocomplete = new window.google.maps.places.Autocomplete(
+            cityInputRef.current,
+            {
+                types: ["(cities)"],
+                componentRestrictions: { country: "in" } // India only
+            }
+        )
+        autocomplete.addListener("place_changed", () => {
+            const place = autocomplete.getPlace()
+            if (!place.geometry) return
+
+            const lat = place.geometry.location.lat()
+            const lng = place.geometry.location.lng()
+            const cityName = place.formatted_address
+
+            // Update city text
+            setCity(cityName)
+
+            // Update map location
+            setLocation({ lat, lng })
+            setMapCenter({ lat, lng })
+        })
+    }, [])
+
+    // college autocomplete
+    // Step — College autocomplete
+    useEffect(() => {
+        if (!collegeInputRef.current) return
+
+        const autocomplete = new window.google.maps.places.Autocomplete(
+            collegeInputRef.current,
+            {
+                types: ["establishment"],
+                componentRestrictions: { country: "in" },
+                fields: ["name", "formatted_address"]
+            }
+        )
+
+        autocomplete.addListener("place_changed", () => {
+            const place = autocomplete.getPlace()
+            if (!place.name) return
+            setCollege(place.name)
+        })
+    }, [])
 
     // Step 6 — Handle submit
     async function handleSubmit() {
         // Step 7 — Validation
-        if(!college || !city || !budget || !gender || !lookingFor) {
+        if (!college || !city || !budget || !gender || !lookingFor) {
             setError("Please fill all required fields")
             return
         }
@@ -48,6 +109,7 @@ function CompleteProfile() {
                 sleepSchedule,
                 cleanliness,
                 bio,
+                location: location || null,
                 profileComplete: true,
                 updatedAt: new Date().toISOString()
             })
@@ -55,7 +117,7 @@ function CompleteProfile() {
             // Step 9 — Redirect to browse page
             navigate("/browse")
 
-        } catch(err) {
+        } catch (err) {
             setError("Something went wrong. Please try again.")
             console.log("Profile update error:", err)
         } finally {
@@ -177,8 +239,9 @@ function CompleteProfile() {
                     <div>
                         <label style={labelStyle}>College Name *</label>
                         <input
+                            ref={collegeInputRef}
                             type="text"
-                            placeholder="e.g. Ajinkya DY Patil University"
+                            placeholder="Start typing your college name..."
                             value={college}
                             onChange={(e) => setCollege(e.target.value)}
                             style={inputStyle}
@@ -189,8 +252,9 @@ function CompleteProfile() {
                     <div>
                         <label style={labelStyle}>City / Area *</label>
                         <input
+                            ref={cityInputRef}
                             type="text"
-                            placeholder="e.g. Pune, Lohagaon"
+                            placeholder="Start typing your city..."
                             value={city}
                             onChange={(e) => setCity(e.target.value)}
                             style={inputStyle}
@@ -319,6 +383,57 @@ function CompleteProfile() {
                                 lineHeight: "1.6"
                             }}
                         />
+                    </div>
+
+                    {/* Location picker */}
+                    <div>
+                        <label style={labelStyle}>Your Location * (click on map to pin)</label>
+                        <p style={{
+                            color: "rgba(249,250,251,0.4)",
+                            fontSize: "12px",
+                            fontFamily: "Inter, sans-serif",
+                            marginBottom: "10px"
+                        }}>
+                            Click anywhere on the map to set your location
+                        </p>
+
+                        <div style={{
+                            borderRadius: "16px",
+                            overflow: "hidden",
+                            border: "1px solid rgba(255,255,255,0.1)",
+                            height: "300px"
+                        }}>
+                            <GoogleMap
+                                mapContainerStyle={{ width: "100%", height: "100%" }}
+                                center={mapCenter}
+                                zoom={12}
+                                onClick={handleMapClick}
+                                options={{
+                                    styles: [
+                                        { elementType: "geometry", stylers: [{ color: "#1d2c4d" }] },
+                                        { elementType: "labels.text.fill", stylers: [{ color: "#8ec3b9" }] },
+                                        { elementType: "labels.text.stroke", stylers: [{ color: "#1a3646" }] },
+                                        { featureType: "water", elementType: "geometry", stylers: [{ color: "#0e1626" }] },
+                                        { featureType: "road", elementType: "geometry", stylers: [{ color: "#304a7d" }] }
+                                    ],
+                                    disableDefaultUI: true,
+                                    zoomControl: true
+                                }}
+                            >
+                                {location && <Marker position={location} />}
+                            </GoogleMap>
+                        </div>
+
+                        {location && (
+                            <p style={{
+                                color: "#A78BFA",
+                                fontSize: "12px",
+                                fontFamily: "Inter, sans-serif",
+                                marginTop: "8px"
+                            }}>
+                                ✅ Location pinned: {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
+                            </p>
+                        )}
                     </div>
 
                     {/* Step 14 — Submit button */}

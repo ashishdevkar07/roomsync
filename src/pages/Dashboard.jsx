@@ -135,7 +135,7 @@ function Dashboard() {
                 <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
                     {["Browse", "My Profile"].map((item, i) => (
                         <button key={i}
-                            onClick={() => navigate(i === 0 ? "/browse" : "/complete-profile")}
+                            onClick={() => navigate(i === 0 ? "/browse" : "/my-profile")}
                             style={{
                                 padding: "8px 18px",
                                 background: "transparent",

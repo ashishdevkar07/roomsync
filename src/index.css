@@ -39,3 +39,8 @@ a {
     text-decoration: none;
     color: inherit;
 }
+
+select option {
+    background-color: #13102B;
+    color: #F9FAFB;
+}
