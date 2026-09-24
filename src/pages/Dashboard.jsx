@@ -136,7 +136,8 @@ function Dashboard() {
                 <div style={{ display: "flex", gap: "4px", alignItems: "center" }}>
                     {[
                         { label: "Browse", path: "/browse" },
-                        { label: "My Profile", path: "/my-profile" }
+                        { label: "My Profile", path: "/my-profile" },
+                        { label: "Saved", path: "/saved" }
                     ].map((item, i) => (
                         <button key={i} onClick={() => navigate(item.path)} style={{
                             padding: "8px 16px", background: "transparent",
@@ -320,7 +321,9 @@ function Dashboard() {
                                 fontFamily: "Poppins, sans-serif"
                             }}>👤 Edit Profile</button>
                         </div>
+                        
                     </div>
+                    
                 </div>
 
                 {/* ── STATS ROW ── */}

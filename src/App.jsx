@@ -8,6 +8,7 @@ import Browse from "./pages/Browse";
 import ProfileDetail from "./pages/ProfileDetail";
 import ProtectedRoute from "./components/ProtectedRoutes";
 import MyProfile from "./pages/MyProfile";
+import Saved from "./pages/Saved";
 
 function App() {
     return (
@@ -35,6 +36,10 @@ function App() {
 
                 <Route path="/my-profile" element={
                     <ProtectedRoute><MyProfile /></ProtectedRoute>
+                } />
+
+                <Route path="/saved" element={
+                    <ProtectedRoute><Saved /></ProtectedRoute>
                 } />
             </Routes>
         </BrowserRouter>

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import { db } from "../firebase"
-import { collection, getDocs, query, where } from "firebase/firestore"
+import { collection, getDocs, query, where, addDoc, deleteDoc, doc } from "firebase/firestore"
 import { GoogleMap, Marker, InfoWindow } from "@react-google-maps/api"
 
 function Browse() {
@@ -13,6 +13,7 @@ function Browse() {
     const [filtered, setFiltered] = useState([])
     const [loading, setLoading] = useState(true)
     const [activeTab, setActiveTab] = useState("all")
+    const [savedIds, setSavedIds] = useState([])
 
     // Filter state
     const [cityFilter, setCityFilter] = useState("")
@@ -34,16 +35,37 @@ function Browse() {
     useEffect(() => {
         async function fetchProfiles() {
             try {
+                // Fetch profiles
                 const q = query(
                     collection(db, "users"),
                     where("profileComplete", "==", true)
                 )
+
                 const snapshot = await getDocs(q)
+
                 const data = snapshot.docs
                     .map(doc => ({ id: doc.id, ...doc.data() }))
                     .filter(user => user.id !== currentUserId)
+
                 setProfiles(data)
                 setFiltered(data)
+
+
+                // Fetch saved profile IDs
+                const savedSnap = await getDocs(
+                    query(
+                        collection(db, "saved"),
+                        where("userId", "==", currentUserId)
+                    )
+                )
+
+                const savedData = savedSnap.docs.map(doc => ({
+                    docId: doc.id,
+                    ...doc.data()
+                }))
+
+                setSavedIds(savedData)
+
             } catch (err) {
                 console.log("Error:", err)
             } finally {
@@ -52,6 +74,8 @@ function Browse() {
         }
         fetchProfiles()
     }, [])
+
+
 
     // Apply filters
     useEffect(() => {
@@ -164,12 +188,43 @@ function Browse() {
         setBudgetFilter("")
         setGenderFilter("")
         setLookingForFilter("")
-        setCollegeFilter("")  
+        setCollegeFilter("")
         setSearchQuery("")
         setNearMe(false)
         setUserLocation(null)
         setFiltered(profiles)
         setActiveTab("all")
+    }
+
+    async function handleSave(e, profile) {
+        // Stop card click from firing
+        e.stopPropagation()
+
+        const currentUserId = localStorage.getItem("userId")
+        if (!currentUserId) { navigate("/login"); return }
+
+        // Check if already saved
+        const existingSave = savedIds.find(s => s.savedUserId === profile.id)
+
+        if (existingSave) {
+            // Step — Unsave — delete from Firestore
+            await deleteDoc(doc(db, "saved", existingSave.docId))
+            setSavedIds(savedIds.filter(s => s.savedUserId !== profile.id))
+        } else {
+            // Step — Save — add to Firestore
+            const docRef = await addDoc(collection(db, "saved"), {
+                userId: currentUserId,
+                savedUserId: profile.id,
+                savedUserName: profile.name,
+                savedUserCity: profile.city,
+                createdAt: new Date().toISOString()
+            })
+            setSavedIds([...savedIds, {
+                docId: docRef.id,
+                userId: currentUserId,
+                savedUserId: profile.id
+            }])
+        }
     }
 
     const hasActiveFilters = cityFilter || budgetFilter || genderFilter || lookingForFilter || nearMe || searchQuery || collegeFilter
@@ -654,7 +709,18 @@ function Browse() {
                                         color: "#F9FAFB", fontSize: "16px",
                                         fontWeight: "600", fontFamily: "Poppins, sans-serif"
                                     }}>{profile.name}</h3>
-                                    <span style={{ fontSize: "16px", cursor: "pointer" }}>❤️</span>
+                                    <span
+                                        onClick={(e) => handleSave(e, profile)}
+                                        style={{
+                                            fontSize: "18px",
+                                            cursor: "pointer",
+                                            transition: "transform 0.2s"
+                                        }}
+                                        onMouseEnter={e => e.target.style.transform = "scale(1.2)"}
+                                        onMouseLeave={e => e.target.style.transform = "scale(1)"}
+                                    >
+                                        {savedIds.find(s => s.savedUserId === profile.id) ? "❤️" : "🤍"}
+                                    </span>
                                 </div>
 
                                 <p style={{
