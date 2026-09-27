@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"
 import { db } from "../firebase"
 import { doc, getDoc, collection, getDocs, query, where, orderBy, limit } from "firebase/firestore"
 
+
 function Dashboard() {
     const userName = localStorage.getItem("userName")
     const userId = localStorage.getItem("userId")
@@ -20,14 +21,14 @@ function Dashboard() {
 
     useEffect(() => {
         async function fetchData() {
-            if(!userId) { navigate("/login"); return }
+            if (!userId) { navigate("/login"); return }
             try {
                 // Step 2 — Get current user data
                 const userRef = doc(db, "users", userId)
                 const userSnap = await getDoc(userRef)
                 let currentUser = null
 
-                if(userSnap.exists()) {
+                if (userSnap.exists()) {
                     currentUser = userSnap.data()
                     setUserData(currentUser)
                     setProfileComplete(currentUser.profileComplete || false)
@@ -53,10 +54,10 @@ function Dashboard() {
                 setNewToday(todayProfiles.length)
 
                 // Step 5 — Get nearby profiles (same city)
-                if(currentUser?.city) {
+                if (currentUser?.city) {
                     const userCity = currentUser.city.toLowerCase().split(",")[0].trim()
                     const nearby = allProfiles.filter(p => {
-                        if(!p.city) return false
+                        if (!p.city) return false
                         const profileCity = p.city.toLowerCase().split(",")[0].trim()
                         return profileCity.includes(userCity) || userCity.includes(profileCity)
                     })
@@ -72,7 +73,7 @@ function Dashboard() {
                 )
                 setInterests(interestSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })))
 
-            } catch(err) {
+            } catch (err) {
                 console.log("Error:", err)
             } finally {
                 setLoading(false)
@@ -86,7 +87,7 @@ function Dashboard() {
         navigate("/")
     }
 
-    if(loading) return (
+    if (loading) return (
         <div style={{
             minHeight: "100vh", background: "#0F0A1E",
             display: "flex", alignItems: "center",
@@ -321,9 +322,9 @@ function Dashboard() {
                                 fontFamily: "Poppins, sans-serif"
                             }}>👤 Edit Profile</button>
                         </div>
-                        
+
                     </div>
-                    
+
                 </div>
 
                 {/* ── STATS ROW ── */}
@@ -480,11 +481,10 @@ function Dashboard() {
                                             {/* Avatar */}
                                             <div style={{
                                                 height: "100px",
-                                                background: `linear-gradient(135deg, ${
-                                                    profile.gender === "Female" ? "#EC4899, #A855F7" :
-                                                    profile.gender === "Male" ? "#3B82F6, #6366F1" :
-                                                    "#7C3AED, #4F46E5"
-                                                })`,
+                                                background: `linear-gradient(135deg, ${profile.gender === "Female" ? "#EC4899, #A855F7" :
+                                                        profile.gender === "Male" ? "#3B82F6, #6366F1" :
+                                                            "#7C3AED, #4F46E5"
+                                                    })`,
                                                 display: "flex", alignItems: "center",
                                                 justifyContent: "center", position: "relative"
                                             }}>

@@ -4,6 +4,7 @@ import { db } from "../firebase"
 import { collection, getDocs, query, where, addDoc, deleteDoc, doc } from "firebase/firestore"
 import { GoogleMap, Marker, InfoWindow } from "@react-google-maps/api"
 
+
 function Browse() {
     const navigate = useNavigate()
     const currentUserId = localStorage.getItem("userId")
