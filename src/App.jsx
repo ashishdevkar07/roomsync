@@ -9,6 +9,8 @@ import ProfileDetail from "./pages/ProfileDetail";
 import ProtectedRoute from "./components/ProtectedRoutes";
 import MyProfile from "./pages/MyProfile";
 import Saved from "./pages/Saved";
+import AdminLogin from "./pages/AdminLogin";
+import Admin from "./pages/Admin";
 
 function App() {
     return (
@@ -41,6 +43,10 @@ function App() {
                 <Route path="/saved" element={
                     <ProtectedRoute><Saved /></ProtectedRoute>
                 } />
+
+                <Route path="/admin-login" element={<AdminLogin />} />
+
+                <Route path="/admin" element={<Admin />} />
             </Routes>
         </BrowserRouter>
     )

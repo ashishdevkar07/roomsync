@@ -1,261 +1,287 @@
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 function Landing() {
     const navigate = useNavigate()
+    const [scrolled, setScrolled] = useState(false)
+    const [visible, setVisible] = useState(false)
+
+    useEffect(() => {
+        // Trigger entrance animations
+        setTimeout(() => setVisible(true), 100)
+
+        // Navbar scroll effect
+        const handleScroll = () => setScrolled(window.scrollY > 50)
+        window.addEventListener("scroll", handleScroll)
+        return () => window.removeEventListener("scroll", handleScroll)
+    }, [])
 
     return (
-        // Main container with dark background
         <div style={{
             minHeight: "100vh",
-            background: "#0F0A1E",
-            position: "relative",
-            overflow: "hidden",
-            display: "flex",
-            flexDirection: "column"
+            background: "#000000",
+            color: "#FFFFFF",
+            overflow: "hidden"
         }}>
 
-            {/* Background gradient blobs for premium feel */}
-            <div style={{
-                position: "absolute",
-                width: "600px",
-                height: "600px",
-                background: "radial-gradient(circle, rgba(124,58,237,0.15) 0%, transparent 70%)",
-                top: "-100px",
-                left: "-100px",
-                pointerEvents: "none"
-            }} />
-            <div style={{
-                position: "absolute",
-                width: "500px",
-                height: "500px",
-                background: "radial-gradient(circle, rgba(45,27,105,0.2) 0%, transparent 70%)",
-                bottom: "-50px",
-                right: "-50px",
-                pointerEvents: "none"
-            }} />
+            {/* ── ANIMATED BACKGROUND ── */}
+            <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0 }}>
+                {/* Gold glow top left */}
+                <div style={{
+                    position: "absolute",
+                    width: "600px", height: "600px",
+                    background: "radial-gradient(circle, rgba(245,158,11,0.08) 0%, transparent 70%)",
+                    top: "-200px", left: "-200px",
+                    animation: "pulse 4s ease-in-out infinite"
+                }} />
+                {/* Gold glow bottom right */}
+                <div style={{
+                    position: "absolute",
+                    width: "500px", height: "500px",
+                    background: "radial-gradient(circle, rgba(245,158,11,0.05) 0%, transparent 70%)",
+                    bottom: "-100px", right: "-100px",
+                    animation: "pulse 4s ease-in-out infinite 2s"
+                }} />
+                {/* Grid pattern */}
+                <div style={{
+                    position: "absolute", inset: 0,
+                    backgroundImage: `linear-gradient(rgba(245,158,11,0.03) 1px, transparent 1px),
+                                     linear-gradient(90deg, rgba(245,158,11,0.03) 1px, transparent 1px)`,
+                    backgroundSize: "60px 60px"
+                }} />
+            </div>
 
-            {/* Navbar */}
+            {/* ── NAVBAR ── */}
             <nav style={{
+                position: "fixed", top: 0, left: 0, right: 0,
+                zIndex: 100,
+                padding: "20px 60px",
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                padding: "24px 60px",
-                position: "relative",
-                zIndex: 10,
-                borderBottom: "1px solid rgba(255,255,255,0.06)"
+                background: scrolled ? "rgba(0,0,0,0.9)" : "transparent",
+                backdropFilter: scrolled ? "blur(20px)" : "none",
+                borderBottom: scrolled ? "1px solid #222" : "none",
+                transition: "all 0.4s ease"
             }}>
                 {/* Logo */}
                 <div style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "10px"
+                    display: "flex", alignItems: "center", gap: "10px",
+                    cursor: "pointer",
+                    opacity: visible ? 1 : 0,
+                    transform: visible ? "translateY(0)" : "translateY(-20px)",
+                    transition: "all 0.6s ease"
                 }}>
                     <div style={{
-                        width: "38px",
-                        height: "38px",
-                        background: "linear-gradient(135deg, #7C3AED, #4F46E5)",
+                        width: "36px", height: "36px",
+                        background: "linear-gradient(135deg, #F59E0B, #D97706)",
                         borderRadius: "10px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: "18px"
+                        display: "flex", alignItems: "center",
+                        justifyContent: "center", fontSize: "18px",
+                        boxShadow: "0 0 20px rgba(245,158,11,0.4)"
                     }}>🏠</div>
                     <span style={{
-                        color: "#F9FAFB",
-                        fontSize: "20px",
-                        fontWeight: "700",
-                        fontFamily: "Poppins, sans-serif"
+                        fontSize: "20px", fontWeight: "800",
+                        fontFamily: "Poppins, sans-serif",
+                        background: "linear-gradient(135deg, #FFFFFF, #888888)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent"
                     }}>RoomSync</span>
                 </div>
 
-                {/*  Nav buttons */}
-                <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-                    <button
-                        onClick={() => navigate("/login")}
-                        style={{
-                            padding: "10px 24px",
-                            background: "transparent",
-                            color: "rgba(249,250,251,0.8)",
-                            border: "1px solid rgba(255,255,255,0.15)",
-                            borderRadius: "25px",
-                            fontSize: "14px",
-                            fontWeight: "500",
-                            cursor: "pointer",
-                            fontFamily: "Poppins, sans-serif",
-                            transition: "all 0.3s"
+                {/* Nav links */}
+                <div style={{
+                    display: "flex", gap: "8px", alignItems: "center",
+                    opacity: visible ? 1 : 0,
+                    transform: visible ? "translateY(0)" : "translateY(-20px)",
+                    transition: "all 0.6s ease 0.1s"
+                }}>
+                    <button onClick={() => navigate("/login")} style={{
+                        padding: "10px 24px",
+                        background: "transparent",
+                        color: "#888888",
+                        border: "1px solid #222222",
+                        borderRadius: "25px",
+                        fontSize: "14px",
+                        fontFamily: "Poppins, sans-serif",
+                        cursor: "pointer",
+                        transition: "all 0.3s"
+                    }}
+                        onMouseEnter={e => {
+                            e.target.style.borderColor = "#F59E0B"
+                            e.target.style.color = "#F59E0B"
                         }}
-                    >
-                        Login
-                    </button>
-                    <span
-                        onClick={() => navigate("/admin")}
-                        style={{
-                            color: "rgba(249,250,251,0.2)",
-                            fontSize: "12px",
-                            cursor: "pointer",
-                            fontFamily: "Inter, sans-serif"
+                        onMouseLeave={e => {
+                            e.target.style.borderColor = "#222222"
+                            e.target.style.color = "#888888"
                         }}
-                    >
-                        Admin
-                    </span>
+                    >Login</button>
+                    <button onClick={() => navigate("/admin-login")} style={{
+                        padding: "10px 24px",
+                        background: "transparent",
+                        color: "#444444",
+                        border: "none",
+                        fontSize: "13px",
+                        fontFamily: "Poppins, sans-serif",
+                        cursor: "pointer"
+                    }}>Admin</button>
                 </div>
             </nav>
 
-            {/* Hero section */}
+            {/* ── HERO SECTION ── */}
             <div style={{
-                flex: 1,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
+                position: "relative", zIndex: 1,
+                minHeight: "100vh",
+                display: "flex", flexDirection: "column",
+                alignItems: "center", justifyContent: "center",
                 textAlign: "center",
-                padding: "80px 20px",
-                position: "relative",
-                zIndex: 10
+                padding: "120px 20px 80px"
             }}>
-                {/*Badge */}
+                {/* Badge */}
                 <div style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    background: "rgba(124,58,237,0.15)",
-                    border: "1px solid rgba(124,58,237,0.3)",
-                    borderRadius: "25px",
-                    padding: "8px 20px",
-                    marginBottom: "32px"
+                    display: "inline-flex", alignItems: "center", gap: "8px",
+                    background: "rgba(245,158,11,0.1)",
+                    border: "1px solid rgba(245,158,11,0.3)",
+                    borderRadius: "25px", padding: "8px 20px",
+                    marginBottom: "40px",
+                    opacity: visible ? 1 : 0,
+                    transform: visible ? "translateY(0)" : "translateY(30px)",
+                    transition: "all 0.8s ease 0.2s"
                 }}>
-                    <span style={{ fontSize: "14px" }}>✨</span>
                     <span style={{
-                        color: "#A78BFA",
-                        fontSize: "13px",
-                        fontWeight: "500",
-                        fontFamily: "Poppins, sans-serif"
-                    }}>
-                        The smartest way to find your roommate
-                    </span>
+                        width: "6px", height: "6px",
+                        background: "#F59E0B",
+                        borderRadius: "50%",
+                        animation: "pulse 2s infinite"
+                    }} />
+                    <span style={{
+                        color: "#F59E0B", fontSize: "13px",
+                        fontWeight: "500", fontFamily: "Inter, sans-serif"
+                    }}>India's smartest roommate finder</span>
                 </div>
 
-                {/*Main heading */}
+                {/* Main heading */}
                 <h1 style={{
-                    fontSize: "72px",
-                    fontWeight: "800",
-                    color: "#F9FAFB",
+                    fontSize: "80px", fontWeight: "800",
                     fontFamily: "Poppins, sans-serif",
-                    lineHeight: "1.1",
-                    marginBottom: "24px",
-                    maxWidth: "850px"
+                    lineHeight: "1.05", marginBottom: "24px",
+                    maxWidth: "900px",
+                    opacity: visible ? 1 : 0,
+                    transform: visible ? "translateY(0)" : "translateY(40px)",
+                    transition: "all 0.8s ease 0.3s"
                 }}>
-                    Find your people.{" "}
+                    Find your people.
+                    <br />
                     <span style={{
-                        background: "linear-gradient(135deg, #7C3AED, #A78BFA)",
+                        background: "linear-gradient(135deg, #F59E0B, #FCD34D, #D97706)",
                         WebkitBackgroundClip: "text",
-                        WebkitTextFillColor: "transparent"
+                        WebkitTextFillColor: "transparent",
+                        display: "inline-block"
                     }}>
                         Find your place.
                     </span>
                 </h1>
 
-                {/* Subheading */}
+                {/* Subtext */}
                 <p style={{
-                    fontSize: "18px",
-                    color: "rgba(249,250,251,0.6)",
+                    fontSize: "18px", color: "#888888",
                     fontFamily: "Inter, sans-serif",
-                    lineHeight: "1.8",
-                    marginBottom: "48px",
-                    maxWidth: "560px"
+                    lineHeight: "1.8", marginBottom: "52px",
+                    maxWidth: "560px",
+                    opacity: visible ? 1 : 0,
+                    transform: visible ? "translateY(0)" : "translateY(40px)",
+                    transition: "all 0.8s ease 0.4s"
                 }}>
                     Connect with compatible roommates near your college.
-                    Filter by budget, habits, location and more.
+                    Smart matching. Real profiles. Zero hassle.
                 </p>
 
-                {/*CTA Buttons */}
+                {/* CTA Buttons */}
                 <div style={{
-                    display: "flex",
-                    gap: "16px",
-                    flexWrap: "wrap",
-                    justifyContent: "center",
-                    marginBottom: "80px"
+                    display: "flex", gap: "16px",
+                    flexWrap: "wrap", justifyContent: "center",
+                    marginBottom: "80px",
+                    opacity: visible ? 1 : 0,
+                    transform: visible ? "translateY(0)" : "translateY(40px)",
+                    transition: "all 0.8s ease 0.5s"
                 }}>
-                    {/* Primary button */}
-                    <button
-                        onClick={() => navigate("/register")}
-                        style={{
-                            padding: "16px 40px",
-                            background: "linear-gradient(135deg, #7C3AED, #4F46E5)",
-                            color: "white",
-                            border: "none",
-                            borderRadius: "30px",
-                            fontSize: "16px",
-                            fontWeight: "600",
-                            cursor: "pointer",
-                            fontFamily: "Poppins, sans-serif",
-                            boxShadow: "0 8px 25px rgba(124,58,237,0.4)",
-                            transition: "all 0.3s"
-                        }}
+                    <button onClick={() => navigate("/register")} style={{
+                        padding: "18px 44px",
+                        background: "linear-gradient(135deg, #F59E0B, #D97706)",
+                        color: "#000000",
+                        border: "none",
+                        borderRadius: "30px",
+                        fontSize: "16px",
+                        fontWeight: "700",
+                        cursor: "pointer",
+                        fontFamily: "Poppins, sans-serif",
+                        boxShadow: "0 0 40px rgba(245,158,11,0.4)",
+                        transition: "all 0.3s"
+                    }}
                         onMouseEnter={e => {
-                            e.target.style.transform = "translateY(-2px)"
-                            e.target.style.boxShadow = "0 12px 30px rgba(124,58,237,0.6)"
+                            e.target.style.transform = "translateY(-3px) scale(1.02)"
+                            e.target.style.boxShadow = "0 0 60px rgba(245,158,11,0.6)"
                         }}
                         onMouseLeave={e => {
-                            e.target.style.transform = "translateY(0)"
-                            e.target.style.boxShadow = "0 8px 25px rgba(124,58,237,0.4)"
+                            e.target.style.transform = "translateY(0) scale(1)"
+                            e.target.style.boxShadow = "0 0 40px rgba(245,158,11,0.4)"
                         }}
                     >
                         Find a Roommate →
                     </button>
 
-                    {/* Secondary button */}
-                    <button
-                        onClick={() => navigate("/register")}
-                        style={{
-                            padding: "16px 40px",
-                            background: "transparent",
-                            color: "#F9FAFB",
-                            border: "1px solid rgba(255,255,255,0.2)",
-                            borderRadius: "30px",
-                            fontSize: "16px",
-                            fontWeight: "600",
-                            cursor: "pointer",
-                            fontFamily: "Poppins, sans-serif",
-                            transition: "all 0.3s"
-                        }}
+                    <button onClick={() => navigate("/register")} style={{
+                        padding: "18px 44px",
+                        background: "transparent",
+                        color: "#FFFFFF",
+                        border: "1px solid #333333",
+                        borderRadius: "30px",
+                        fontSize: "16px",
+                        fontWeight: "600",
+                        cursor: "pointer",
+                        fontFamily: "Poppins, sans-serif",
+                        transition: "all 0.3s"
+                    }}
                         onMouseEnter={e => {
-                            e.target.style.borderColor = "#7C3AED"
-                            e.target.style.color = "#A78BFA"
+                            e.currentTarget.style.borderColor = "#F59E0B"
+                            e.currentTarget.style.color = "#F59E0B"
+                            e.currentTarget.style.transform = "translateY(-3px)"
                         }}
                         onMouseLeave={e => {
-                            e.target.style.borderColor = "rgba(255,255,255,0.2)"
-                            e.target.style.color = "#F9FAFB"
+                            e.currentTarget.style.borderColor = "#333333"
+                            e.currentTarget.style.color = "#FFFFFF"
+                            e.currentTarget.style.transform = "translateY(0)"
                         }}
                     >
-                        Browse Listings
+                        List Your Room
                     </button>
                 </div>
 
-                {/* Stats row */}
+                {/* Stats */}
                 <div style={{
-                    display: "flex",
-                    gap: "60px",
-                    flexWrap: "wrap",
-                    justifyContent: "center"
+                    display: "flex", gap: "60px",
+                    flexWrap: "wrap", justifyContent: "center",
+                    opacity: visible ? 1 : 0,
+                    transform: visible ? "translateY(0)" : "translateY(40px)",
+                    transition: "all 0.8s ease 0.6s"
                 }}>
                     {[
                         { number: "2,400+", label: "Active Listings" },
-                        { number: "180+", label: "Colleges Covered" },
-                        { number: "94%", label: "Match Success Rate" },
-                        { number: "4.8★", label: "User Rating" }
+                        { number: "180+", label: "Colleges" },
+                        { number: "94%", label: "Match Rate" },
+                        { number: "4.9★", label: "Rating" }
                     ].map((stat, i) => (
                         <div key={i} style={{ textAlign: "center" }}>
                             <p style={{
-                                fontSize: "28px",
-                                fontWeight: "700",
-                                color: "#A78BFA",
+                                fontSize: "32px", fontWeight: "800",
                                 fontFamily: "Poppins, sans-serif",
+                                background: "linear-gradient(135deg, #F59E0B, #FCD34D)",
+                                WebkitBackgroundClip: "text",
+                                WebkitTextFillColor: "transparent",
                                 marginBottom: "4px"
                             }}>{stat.number}</p>
                             <p style={{
-                                fontSize: "13px",
-                                color: "rgba(249,250,251,0.5)",
+                                fontSize: "13px", color: "#555555",
                                 fontFamily: "Inter, sans-serif"
                             }}>{stat.label}</p>
                         </div>
@@ -263,114 +289,264 @@ function Landing() {
                 </div>
             </div>
 
-            {/*How it works section */}
+            {/* ── HOW IT WORKS ── */}
             <div style={{
-                background: "rgba(255,255,255,0.03)",
-                borderTop: "1px solid rgba(255,255,255,0.06)",
-                padding: "80px 60px",
-                position: "relative",
-                zIndex: 10
+                position: "relative", zIndex: 1,
+                padding: "100px 60px",
+                borderTop: "1px solid #111111"
             }}>
-                <h2 style={{
-                    textAlign: "center",
-                    color: "#F9FAFB",
-                    fontSize: "36px",
-                    fontWeight: "700",
-                    marginBottom: "8px",
-                    fontFamily: "Poppins, sans-serif"
-                }}>How it works</h2>
-                <p style={{
-                    textAlign: "center",
-                    color: "rgba(249,250,251,0.5)",
-                    marginBottom: "60px",
-                    fontFamily: "Inter, sans-serif"
-                }}>
-                    Find your perfect roommate in 3 simple steps
-                </p>
+                <div style={{ textAlign: "center", marginBottom: "70px" }}>
+                    <p style={{
+                        color: "#F59E0B", fontSize: "12px",
+                        fontWeight: "600", letterSpacing: "3px",
+                        fontFamily: "Inter, sans-serif",
+                        textTransform: "uppercase", marginBottom: "16px"
+                    }}>HOW IT WORKS</p>
+                    <h2 style={{
+                        fontSize: "44px", fontWeight: "800",
+                        fontFamily: "Poppins, sans-serif", color: "#FFFFFF",
+                        marginBottom: "16px"
+                    }}>Three steps to your<br />perfect match</h2>
+                    <p style={{
+                        color: "#555555", fontSize: "16px",
+                        fontFamily: "Inter, sans-serif"
+                    }}>Simple, fast, and secure</p>
+                </div>
 
-                {/* steps cards */}
                 <div style={{
                     display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-                    gap: "24px",
-                    maxWidth: "900px",
-                    margin: "0 auto"
+                    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                    gap: "24px", maxWidth: "1000px", margin: "0 auto"
                 }}>
                     {[
                         {
                             step: "01",
                             icon: "📝",
                             title: "Create your profile",
-                            desc: "Fill in your preferences — budget, location, habits, college and what you're looking for."
+                            desc: "Fill in your preferences — budget, location, habits and college. Takes less than 2 minutes."
                         },
                         {
                             step: "02",
                             icon: "🔍",
                             title: "Browse and filter",
-                            desc: "Search through verified profiles. Filter by budget, area, gender and compatibility."
+                            desc: "Search verified profiles. Filter by budget, area, gender and use our AI to find perfect matches."
                         },
                         {
                             step: "03",
                             icon: "🤝",
                             title: "Connect and move in",
-                            desc: "Send a connection request. Chat, confirm compatibility, and find your perfect place."
+                            desc: "Send interest, connect, confirm compatibility and find your perfect place."
                         }
                     ].map((item, i) => (
                         <div key={i} style={{
-                            background: "rgba(255,255,255,0.04)",
-                            border: "1px solid rgba(255,255,255,0.08)",
-                            borderRadius: "20px",
-                            padding: "32px 28px",
-                            transition: "all 0.3s"
-                        }}>
-                            <div style={{
-                                fontSize: "12px",
-                                fontWeight: "700",
-                                color: "#7C3AED",
-                                letterSpacing: "2px",
-                                marginBottom: "16px",
-                                fontFamily: "Poppins, sans-serif"
-                            }}>STEP {item.step}</div>
-                            <div style={{ fontSize: "36px", marginBottom: "16px" }}>{item.icon}</div>
+                            background: "#0A0A0A",
+                            border: "1px solid #1A1A1A",
+                            borderRadius: "24px",
+                            padding: "36px 30px",
+                            transition: "all 0.4s ease",
+                            cursor: "default",
+                            position: "relative",
+                            overflow: "hidden"
+                        }}
+                            onMouseEnter={e => {
+                                e.currentTarget.style.borderColor = "#F59E0B"
+                                e.currentTarget.style.transform = "translateY(-8px)"
+                                e.currentTarget.style.boxShadow = "0 20px 60px rgba(245,158,11,0.1)"
+                            }}
+                            onMouseLeave={e => {
+                                e.currentTarget.style.borderColor = "#1A1A1A"
+                                e.currentTarget.style.transform = "translateY(0)"
+                                e.currentTarget.style.boxShadow = "none"
+                            }}
+                        >
+                            {/* Step number */}
+                            <p style={{
+                                position: "absolute", top: "20px", right: "24px",
+                                fontSize: "48px", fontWeight: "900",
+                                color: "#1A1A1A", fontFamily: "Poppins, sans-serif"
+                            }}>{item.step}</p>
+
+                            <div style={{ fontSize: "40px", marginBottom: "20px" }}>{item.icon}</div>
                             <h3 style={{
-                                color: "#F9FAFB",
-                                fontSize: "18px",
-                                fontWeight: "600",
-                                marginBottom: "10px",
-                                fontFamily: "Poppins, sans-serif"
+                                color: "#FFFFFF", fontSize: "20px",
+                                fontWeight: "700", fontFamily: "Poppins, sans-serif",
+                                marginBottom: "12px"
                             }}>{item.title}</h3>
                             <p style={{
-                                color: "rgba(249,250,251,0.5)",
-                                fontSize: "14px",
-                                lineHeight: "1.7",
-                                fontFamily: "Inter, sans-serif"
+                                color: "#555555", fontSize: "14px",
+                                fontFamily: "Inter, sans-serif", lineHeight: "1.8"
                             }}>{item.desc}</p>
                         </div>
                     ))}
                 </div>
             </div>
 
-            {/* Footer */}
+            {/* ── FEATURES SECTION ── */}
             <div style={{
-                borderTop: "1px solid rgba(255,255,255,0.06)",
+                position: "relative", zIndex: 1,
+                padding: "100px 60px",
+                borderTop: "1px solid #111111"
+            }}>
+                <div style={{ textAlign: "center", marginBottom: "70px" }}>
+                    <p style={{
+                        color: "#F59E0B", fontSize: "12px",
+                        fontWeight: "600", letterSpacing: "3px",
+                        fontFamily: "Inter, sans-serif",
+                        textTransform: "uppercase", marginBottom: "16px"
+                    }}>WHY ROOMSYNC</p>
+                    <h2 style={{
+                        fontSize: "44px", fontWeight: "800",
+                        fontFamily: "Poppins, sans-serif", color: "#FFFFFF"
+                    }}>Everything you need<br />to find the right fit</h2>
+                </div>
+
+                <div style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+                    gap: "16px", maxWidth: "1000px", margin: "0 auto"
+                }}>
+                    {[
+                        { icon: "📍", title: "Location Based", desc: "Find roommates near your college or workplace" },
+                        { icon: "✅", title: "Verified Profiles", desc: "All profiles are student verified" },
+                        { icon: "💰", title: "Budget Filter", desc: "Filter by monthly budget that works for you" },
+                        { icon: "🔒", title: "Safe & Secure", desc: "Your data is protected and private" },
+                        { icon: "💜", title: "Send Interest", desc: "Express interest without sharing contact directly" },
+                        { icon: "🗺️", title: "Map View", desc: "See roommates on map near your location" }
+                    ].map((item, i) => (
+                        <div key={i} style={{
+                            background: "#0A0A0A",
+                            border: "1px solid #1A1A1A",
+                            borderRadius: "20px", padding: "28px",
+                            transition: "all 0.3s"
+                        }}
+                            onMouseEnter={e => {
+                                e.currentTarget.style.borderColor = "rgba(245,158,11,0.3)"
+                                e.currentTarget.style.background = "#0F0F0F"
+                            }}
+                            onMouseLeave={e => {
+                                e.currentTarget.style.borderColor = "#1A1A1A"
+                                e.currentTarget.style.background = "#0A0A0A"
+                            }}
+                        >
+                            <div style={{ fontSize: "28px", marginBottom: "14px" }}>{item.icon}</div>
+                            <h3 style={{
+                                color: "#FFFFFF", fontSize: "16px",
+                                fontWeight: "600", fontFamily: "Poppins, sans-serif",
+                                marginBottom: "8px"
+                            }}>{item.title}</h3>
+                            <p style={{
+                                color: "#555555", fontSize: "13px",
+                                fontFamily: "Inter, sans-serif", lineHeight: "1.7"
+                            }}>{item.desc}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* ── CTA SECTION ── */}
+            <div style={{
+                position: "relative", zIndex: 1,
+                padding: "100px 60px",
+                borderTop: "1px solid #111111",
+                textAlign: "center"
+            }}>
+                <div style={{
+                    maxWidth: "700px", margin: "0 auto",
+                    background: "linear-gradient(135deg, #0A0A0A, #111111)",
+                    border: "1px solid #222222",
+                    borderRadius: "32px", padding: "60px",
+                    position: "relative", overflow: "hidden"
+                }}>
+                    {/* Gold glow */}
+                    <div style={{
+                        position: "absolute", top: "50%", left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        width: "400px", height: "400px",
+                        background: "radial-gradient(circle, rgba(245,158,11,0.06) 0%, transparent 70%)",
+                        pointerEvents: "none"
+                    }} />
+
+                    <h2 style={{
+                        fontSize: "40px", fontWeight: "800",
+                        fontFamily: "Poppins, sans-serif",
+                        color: "#FFFFFF", marginBottom: "16px",
+                        position: "relative"
+                    }}>
+                        Ready to find your<br />
+                        <span style={{
+                            background: "linear-gradient(135deg, #F59E0B, #FCD34D)",
+                            WebkitBackgroundClip: "text",
+                            WebkitTextFillColor: "transparent"
+                        }}>perfect roommate?</span>
+                    </h2>
+                    <p style={{
+                        color: "#555555", fontSize: "16px",
+                        fontFamily: "Inter, sans-serif",
+                        marginBottom: "36px", position: "relative"
+                    }}>
+                        Join thousands of students who found their ideal living partner
+                    </p>
+                    <button onClick={() => navigate("/register")} style={{
+                        padding: "18px 48px",
+                        background: "linear-gradient(135deg, #F59E0B, #D97706)",
+                        color: "#000000", border: "none",
+                        borderRadius: "30px", fontSize: "16px",
+                        fontWeight: "700", cursor: "pointer",
+                        fontFamily: "Poppins, sans-serif",
+                        boxShadow: "0 0 40px rgba(245,158,11,0.3)",
+                        transition: "all 0.3s",
+                        position: "relative"
+                    }}
+                        onMouseEnter={e => {
+                            e.target.style.transform = "translateY(-3px)"
+                            e.target.style.boxShadow = "0 0 60px rgba(245,158,11,0.5)"
+                        }}
+                        onMouseLeave={e => {
+                            e.target.style.transform = "translateY(0)"
+                            e.target.style.boxShadow = "0 0 40px rgba(245,158,11,0.3)"
+                        }}
+                    >Get Started Free →</button>
+                </div>
+            </div>
+
+            {/* ── FOOTER ── */}
+            <div style={{
+                position: "relative", zIndex: 1,
                 padding: "24px 60px",
+                borderTop: "1px solid #111111",
                 display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                position: "relative",
-                zIndex: 10
+                justifyContent: "space-between",
+                alignItems: "center"
             }}>
                 <span style={{
-                    color: "rgba(249,250,251,0.4)",
-                    fontSize: "14px",
-                    fontFamily: "Inter, sans-serif",
+                    color: "#333333", fontSize: "13px",
+                    fontFamily: "Inter, sans-serif"
+                }}>© 2025 RoomSync. All rights reserved.</span>
 
-                }}>
-                    © 2025 RoomSync. All rights reserved.
-                </span>
+                <span onClick={() => navigate("/serviceman-login")} style={{
+                    color: "#333333", fontSize: "12px",
+                    fontFamily: "Inter, sans-serif",
+                    cursor: "pointer"
+                }}>Admin Access</span>
             </div>
+
+            {/* ── CSS ANIMATIONS ── */}
+            <style>{`
+                @keyframes pulse {
+                    0%, 100% { opacity: 1; transform: scale(1); }
+                    50% { opacity: 0.7; transform: scale(1.05); }
+                }
+                @keyframes float {
+                    0%, 100% { transform: translateY(0px); }
+                    50% { transform: translateY(-10px); }
+                }
+                @keyframes shimmer {
+                    0% { background-position: -200% 0; }
+                    100% { background-position: 200% 0; }
+                }
+            `}</style>
         </div>
     )
 }
 
-export default Landing
+export default Landing  

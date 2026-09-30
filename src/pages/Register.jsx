@@ -1,14 +1,9 @@
-// Step 1 — Import dependencies
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-
-// Step 2 — Import Firebase auth functions
 import { db } from "../firebase"
 import { collection, addDoc } from "firebase/firestore"
 
-// Step 3 — Register component
 function Register() {
-    // Step 4 — Form state
     const [name, setName] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
@@ -16,306 +11,308 @@ function Register() {
     const [error, setError] = useState("")
     const navigate = useNavigate()
 
-    // Step 5 — Handle registration
     async function handleRegister() {
-        // Step 6 — Validation
-        if (!name || !email || !password) {
+        if(!name || !email || !password) {
             setError("Please fill all fields")
             return
         }
-        if (password.length < 6) {
+        if(password.length < 6) {
             setError("Password must be at least 6 characters")
             return
         }
-
         try {
             setLoading(true)
             setError("")
-
-            // Step 7 — Save user to Firestore
-            await addDoc(collection(db, "users"), {
-                name,
-                email,
-                password, // Note: in real app use Firebase Auth
+            const docRef = await addDoc(collection(db, "users"), {
+                name, email, password,
                 createdAt: new Date().toISOString(),
                 profileComplete: false
             })
-
-            // Step 8 — Save to localStorage for session
             localStorage.setItem("userName", name)
             localStorage.setItem("userEmail", email)
-
-            // Step 9 — Redirect to complete profile page
+            localStorage.setItem("userId", docRef.id)
             navigate("/dashboard")
-
-        } catch (err) {
+        } catch(err) {
             setError("Something went wrong. Please try again.")
-            console.log("Register error:", err)
         } finally {
             setLoading(false)
         }
     }
 
-    // Step 10 — Render
     return (
         <div style={{
             minHeight: "100vh",
-            background: "#0F0A1E",
+            background: "#000000",
             display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "20px"
+            position: "relative",
+            overflow: "hidden"
         }}>
-            {/* Step 11 — Main container with two sides */}
+            {/* Background effects */}
             <div style={{
-                display: "flex",
-                width: "100%",
-                maxWidth: "1000px",
-                minHeight: "580px",
-                borderRadius: "24px",
-                overflow: "hidden",
-                boxShadow: "0 25px 60px rgba(0,0,0,0.4)"
+                position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0
             }}>
-
-                {/* Step 12 — Left side image */}
                 <div style={{
-                    flex: 1,
-                    background: "linear-gradient(135deg, #2D1B69 0%, #7C3AED 100%)",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    padding: "60px 40px",
-                    position: "relative",
-                    overflow: "hidden"
-                }}>
-                    {/* Background image overlay */}
+                    position: "absolute",
+                    width: "500px", height: "500px",
+                    background: "radial-gradient(circle, rgba(245,158,11,0.06) 0%, transparent 70%)",
+                    top: "-100px", right: "-100px"
+                }} />
+                <div style={{
+                    position: "absolute", inset: 0,
+                    backgroundImage: `linear-gradient(rgba(245,158,11,0.02) 1px, transparent 1px),
+                                     linear-gradient(90deg, rgba(245,158,11,0.02) 1px, transparent 1px)`,
+                    backgroundSize: "60px 60px"
+                }} />
+            </div>
+
+            {/* Left side — form */}
+            <div style={{
+                width: "480px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                padding: "60px 48px",
+                position: "relative",
+                zIndex: 1,
+                borderRight: "1px solid #111111"
+            }}>
+                {/* Logo */}
+                <div
+                    onClick={() => navigate("/")}
+                    style={{
+                        display: "flex", alignItems: "center",
+                        gap: "10px", marginBottom: "48px",
+                        cursor: "pointer"
+                    }}>
                     <div style={{
-                        position: "absolute",
-                        top: 0, left: 0, right: 0, bottom: 0,
-                        backgroundImage: "url('https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80')",
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                        opacity: 0.2
-                    }} />
-
-                    {/* Content on image side */}
-                    <div style={{ position: "relative", zIndex: 1, textAlign: "center" }}>
-                        {/* Logo */}
-                        <div style={{
-                            width: "60px",
-                            height: "60px",
-                            background: "rgba(255,255,255,0.15)",
-                            borderRadius: "16px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            fontSize: "28px",
-                            margin: "0 auto 24px"
-                        }}>🏠</div>
-
-                        <h2 style={{
-                            color: "white",
-                            fontSize: "28px",
-                            fontWeight: "700",
-                            fontFamily: "Poppins, sans-serif",
-                            marginBottom: "16px",
-                            lineHeight: "1.3"
-                        }}>
-                            Find your perfect roommate
-                        </h2>
-
-                        <p style={{
-                            color: "rgba(255,255,255,0.7)",
-                            fontSize: "15px",
-                            fontFamily: "Inter, sans-serif",
-                            lineHeight: "1.7",
-                            marginBottom: "40px"
-                        }}>
-                            Join thousands of students who found their ideal living partner through RoomSync.
-                        </p>
-
-                        {/* Feature list */}
-                        {[
-                            "✓ Verified student profiles",
-                            "✓ Smart compatibility matching",
-                            "✓ Filter by budget and location",
-                            "✓ Safe and secure platform"
-                        ].map((item, i) => (
-                            <p key={i} style={{
-                                color: "rgba(255,255,255,0.85)",
-                                fontSize: "14px",
-                                fontFamily: "Inter, sans-serif",
-                                marginBottom: "10px",
-                                textAlign: "left"
-                            }}>{item}</p>
-                        ))}
-                    </div>
+                        width: "36px", height: "36px",
+                        background: "linear-gradient(135deg, #F59E0B, #D97706)",
+                        borderRadius: "10px", display: "flex",
+                        alignItems: "center", justifyContent: "center",
+                        fontSize: "16px",
+                        boxShadow: "0 0 20px rgba(245,158,11,0.3)"
+                    }}>🏠</div>
+                    <span style={{
+                        color: "#FFFFFF", fontSize: "18px",
+                        fontWeight: "800", fontFamily: "Poppins, sans-serif"
+                    }}>RoomSync</span>
                 </div>
 
-                {/* Step 13 — Right side form */}
-                <div style={{
-                    flex: 1,
-                    background: "#13102B",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    padding: "60px 48px"
+                <h2 style={{
+                    color: "#FFFFFF", fontSize: "28px",
+                    fontWeight: "700", fontFamily: "Poppins, sans-serif",
+                    marginBottom: "8px"
+                }}>Create account</h2>
+
+                <p style={{
+                    color: "#444444", fontSize: "14px",
+                    fontFamily: "Inter, sans-serif",
+                    marginBottom: "36px"
                 }}>
-                    {/* Back to home */}
-                    <p
-                        onClick={() => navigate("/")}
-                        style={{
-                            color: "rgba(255,255,255,0.4)",
-                            fontSize: "13px",
+                    Already have an account?{" "}
+                    <span
+                        onClick={() => navigate("/login")}
+                        style={{ color: "#F59E0B", cursor: "pointer", fontWeight: "500" }}
+                    >Sign in</span>
+                </p>
+
+                {error && (
+                    <div style={{
+                        background: "rgba(239,68,68,0.08)",
+                        border: "1px solid rgba(239,68,68,0.2)",
+                        borderRadius: "12px", padding: "12px 16px",
+                        color: "#F87171", fontSize: "13px",
+                        fontFamily: "Inter, sans-serif",
+                        marginBottom: "24px"
+                    }}>❌ {error}</div>
+                )}
+
+                <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                    {/* Name */}
+                    <div>
+                        <label style={{
+                            color: "#333333", fontSize: "12px",
                             fontFamily: "Inter, sans-serif",
-                            cursor: "pointer",
-                            marginBottom: "32px"
+                            display: "block", marginBottom: "8px",
+                            textTransform: "uppercase", letterSpacing: "0.08em"
+                        }}>Full Name</label>
+                        <input
+                            type="text"
+                            placeholder="Ashish Devkar"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            style={{
+                                width: "100%", padding: "14px 16px",
+                                background: "#0A0A0A",
+                                border: "1px solid #1A1A1A",
+                                borderRadius: "12px", color: "#FFFFFF",
+                                fontSize: "15px", fontFamily: "Inter, sans-serif",
+                                outline: "none", transition: "border-color 0.3s"
+                            }}
+                            onFocus={e => e.target.style.borderColor = "#F59E0B"}
+                            onBlur={e => e.target.style.borderColor = "#1A1A1A"}
+                        />
+                    </div>
+
+                    {/* Email */}
+                    <div>
+                        <label style={{
+                            color: "#333333", fontSize: "12px",
+                            fontFamily: "Inter, sans-serif",
+                            display: "block", marginBottom: "8px",
+                            textTransform: "uppercase", letterSpacing: "0.08em"
+                        }}>Email</label>
+                        <input
+                            type="email"
+                            placeholder="your@email.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            style={{
+                                width: "100%", padding: "14px 16px",
+                                background: "#0A0A0A",
+                                border: "1px solid #1A1A1A",
+                                borderRadius: "12px", color: "#FFFFFF",
+                                fontSize: "15px", fontFamily: "Inter, sans-serif",
+                                outline: "none", transition: "border-color 0.3s"
+                            }}
+                            onFocus={e => e.target.style.borderColor = "#F59E0B"}
+                            onBlur={e => e.target.style.borderColor = "#1A1A1A"}
+                        />
+                    </div>
+
+                    {/* Password */}
+                    <div>
+                        <label style={{
+                            color: "#333333", fontSize: "12px",
+                            fontFamily: "Inter, sans-serif",
+                            display: "block", marginBottom: "8px",
+                            textTransform: "uppercase", letterSpacing: "0.08em"
+                        }}>Password</label>
+                        <input
+                            type="password"
+                            placeholder="Min. 6 characters"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            onKeyDown={(e) => e.key === "Enter" && handleRegister()}
+                            style={{
+                                width: "100%", padding: "14px 16px",
+                                background: "#0A0A0A",
+                                border: "1px solid #1A1A1A",
+                                borderRadius: "12px", color: "#FFFFFF",
+                                fontSize: "15px", fontFamily: "Inter, sans-serif",
+                                outline: "none", transition: "border-color 0.3s"
+                            }}
+                            onFocus={e => e.target.style.borderColor = "#F59E0B"}
+                            onBlur={e => e.target.style.borderColor = "#1A1A1A"}
+                        />
+                    </div>
+
+                    {/* Submit */}
+                    <button
+                        onClick={handleRegister}
+                        disabled={loading}
+                        style={{
+                            width: "100%", padding: "15px",
+                            background: loading
+                                ? "rgba(245,158,11,0.3)"
+                                : "linear-gradient(135deg, #F59E0B, #D97706)",
+                            color: "#000000", border: "none",
+                            borderRadius: "12px", fontSize: "15px",
+                            fontWeight: "700",
+                            cursor: loading ? "not-allowed" : "pointer",
+                            fontFamily: "Poppins, sans-serif",
+                            marginTop: "4px",
+                            boxShadow: loading ? "none" : "0 0 30px rgba(245,158,11,0.3)",
+                            transition: "all 0.3s"
+                        }}
+                        onMouseEnter={e => {
+                            if(!loading) {
+                                e.target.style.transform = "translateY(-2px)"
+                                e.target.style.boxShadow = "0 0 40px rgba(245,158,11,0.5)"
+                            }
+                        }}
+                        onMouseLeave={e => {
+                            e.target.style.transform = "translateY(0)"
+                            e.target.style.boxShadow = loading ? "none" : "0 0 30px rgba(245,158,11,0.3)"
                         }}
                     >
-                        ← Back to home
-                    </p>
+                        {loading ? "Creating account..." : "Create Account →"}
+                    </button>
+                </div>
 
-                    <h1 style={{
-                        color: "#F9FAFB",
-                        fontSize: "28px",
-                        fontWeight: "700",
-                        fontFamily: "Poppins, sans-serif",
-                        marginBottom: "8px"
-                    }}>Create account</h1>
+                <p style={{
+                    textAlign: "center", marginTop: "28px",
+                    color: "#222222", fontSize: "12px",
+                    fontFamily: "Inter, sans-serif"
+                }}>
+                    By registering you agree to our Terms of Service
+                </p>
+            </div>
 
-                    <p style={{
-                        color: "rgba(249,250,251,0.5)",
-                        fontSize: "14px",
-                        fontFamily: "Inter, sans-serif",
-                        marginBottom: "32px"
-                    }}>
-                        Already have an account?{" "}
-                        <span
-                            onClick={() => navigate("/login")}
-                            style={{ color: "#A78BFA", cursor: "pointer", fontWeight: "500" }}
-                        >
-                            Login here
-                        </span>
-                    </p>
+            {/* Right side — branding */}
+            <div style={{
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                padding: "60px",
+                position: "relative",
+                zIndex: 1
+            }}>
+                <h1 style={{
+                    fontSize: "52px", fontWeight: "800",
+                    fontFamily: "Poppins, sans-serif",
+                    lineHeight: "1.1", marginBottom: "24px",
+                    color: "#FFFFFF"
+                }}>
+                    Your next chapter<br />
+                    <span style={{
+                        background: "linear-gradient(135deg, #F59E0B, #FCD34D)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent"
+                    }}>starts here.</span>
+                </h1>
 
-                    {/* Error message */}
-                    {error && (
-                        <p style={{
-                            color: "#F87171",
-                            fontSize: "13px",
-                            marginBottom: "16px",
-                            fontFamily: "Inter, sans-serif"
-                        }}>{error}</p>
-                    )}
+                <p style={{
+                    color: "#444444", fontSize: "16px",
+                    fontFamily: "Inter, sans-serif",
+                    lineHeight: "1.8", marginBottom: "52px",
+                    maxWidth: "400px"
+                }}>
+                    Join thousands of students across India who found their perfect roommate through RoomSync.
+                </p>
 
-                    {/* Step 14 — Form fields */}
-                    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                        <div>
-                            <label style={{
-                                color: "rgba(249,250,251,0.6)",
-                                fontSize: "13px",
-                                fontFamily: "Inter, sans-serif",
-                                display: "block",
-                                marginBottom: "8px"
-                            }}>Full Name</label>
-                            <input
-                                type="text"
-                                placeholder="Enter your full name"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                style={{
-                                    width: "100%",
-                                    padding: "14px 16px",
-                                    background: "rgba(255,255,255,0.06)",
-                                    border: "1px solid rgba(255,255,255,0.1)",
-                                    borderRadius: "12px",
-                                    color: "#F9FAFB",
-                                    fontSize: "15px",
-                                    fontFamily: "Inter, sans-serif",
-                                    outline: "none"
-                                }}
-                            />
-                        </div>
-
-                        <div>
-                            <label style={{
-                                color: "rgba(249,250,251,0.6)",
-                                fontSize: "13px",
-                                fontFamily: "Inter, sans-serif",
-                                display: "block",
-                                marginBottom: "8px"
-                            }}>Email Address</label>
-                            <input
-                                type="email"
-                                placeholder="Enter your email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                style={{
-                                    width: "100%",
-                                    padding: "14px 16px",
-                                    background: "rgba(255,255,255,0.06)",
-                                    border: "1px solid rgba(255,255,255,0.1)",
-                                    borderRadius: "12px",
-                                    color: "#F9FAFB",
-                                    fontSize: "15px",
-                                    fontFamily: "Inter, sans-serif",
-                                    outline: "none"
-                                }}
-                            />
-                        </div>
-
-                        <div>
-                            <label style={{
-                                color: "rgba(249,250,251,0.6)",
-                                fontSize: "13px",
-                                fontFamily: "Inter, sans-serif",
-                                display: "block",
-                                marginBottom: "8px"
-                            }}>Password</label>
-                            <input
-                                type="password"
-                                placeholder="Min. 6 characters"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                style={{
-                                    width: "100%",
-                                    padding: "14px 16px",
-                                    background: "rgba(255,255,255,0.06)",
-                                    border: "1px solid rgba(255,255,255,0.1)",
-                                    borderRadius: "12px",
-                                    color: "#F9FAFB",
-                                    fontSize: "15px",
-                                    fontFamily: "Inter, sans-serif",
-                                    outline: "none"
-                                }}
-                            />
-                        </div>
-
-                        {/* Step 15 — Submit button */}
-                        <button
-                            onClick={handleRegister}
-                            disabled={loading}
-                            style={{
-                                width: "100%",
-                                padding: "14px",
-                                background: loading
-                                    ? "rgba(124,58,237,0.5)"
-                                    : "linear-gradient(135deg, #7C3AED, #4F46E5)",
-                                color: "white",
-                                border: "none",
-                                borderRadius: "12px",
-                                fontSize: "16px",
-                                fontWeight: "600",
-                                cursor: loading ? "not-allowed" : "pointer",
+                {/* Stats */}
+                <div style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: "16px", maxWidth: "360px"
+                }}>
+                    {[
+                        { number: "2,400+", label: "Active Listings" },
+                        { number: "180+", label: "Colleges" },
+                        { number: "94%", label: "Match Rate" },
+                        { number: "Free", label: "Always" }
+                    ].map((stat, i) => (
+                        <div key={i} style={{
+                            background: "#0A0A0A",
+                            border: "1px solid #1A1A1A",
+                            borderRadius: "16px", padding: "20px"
+                        }}>
+                            <p style={{
+                                fontSize: "24px", fontWeight: "800",
                                 fontFamily: "Poppins, sans-serif",
-                                marginTop: "8px",
-                                boxShadow: "0 4px 15px rgba(124,58,237,0.3)"
-                            }}
-                        >
-                            {loading ? "Creating account..." : "Create Account"}
-                        </button>
-                    </div>
+                                background: "linear-gradient(135deg, #F59E0B, #FCD34D)",
+                                WebkitBackgroundClip: "text",
+                                WebkitTextFillColor: "transparent",
+                                marginBottom: "4px"
+                            }}>{stat.number}</p>
+                            <p style={{
+                                color: "#333333", fontSize: "12px",
+                                fontFamily: "Inter, sans-serif"
+                            }}>{stat.label}</p>
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>
