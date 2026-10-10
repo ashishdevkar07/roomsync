@@ -28,7 +28,7 @@ function MyProfile() {
     const [bio, setBio] = useState("")
     const [profileImage, setProfileImage] = useState("")
 
-    const CLOUD_NAME = "your-cloud-name"
+    const CLOUD_NAME = "wgi3le8f"
     const UPLOAD_PRESET = "roomsync"
 
     useEffect(() => {
